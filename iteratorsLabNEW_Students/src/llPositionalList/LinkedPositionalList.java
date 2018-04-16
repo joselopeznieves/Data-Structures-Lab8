@@ -9,10 +9,13 @@ import interfaces.Position;
 import interfaces.PositionalList;
 
 public class LinkedPositionalList<E> implements PositionalList<E> {
-
-	private static class DNode<E> implements Position<E> { 
+	private Object self = this;
+	
+	private class DNode<E> implements Position<E> { 
 		private E element; 
 		private DNode<E> prev, next;
+		private Object thislist;
+		
 		public E getElement() {
 			return element;
 		}
@@ -20,6 +23,7 @@ public class LinkedPositionalList<E> implements PositionalList<E> {
 			this.element = element;
 			this.prev = prev;
 			this.next = next;
+			this.thislist = self;
 		}
 		public DNode(E element) {
 			this(element, null, null);
@@ -67,7 +71,7 @@ public class LinkedPositionalList<E> implements PositionalList<E> {
 			DNode<E> dp = (DNode<E>) p; 
 			if (dp.getPrev() == null || dp.getNext() == null) 
 				throw new IllegalArgumentException("Invalid internal node."); 
-			
+			if(dp.thislist != this) throw new IllegalArgumentException("Position does not belong to this list");
 			return dp; 
 		} catch (ClassCastException e) { 
 			throw new IllegalArgumentException("Invalid position type."); 
