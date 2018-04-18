@@ -230,6 +230,38 @@ public class LinkedPositionalList<E> implements PositionalList<E> {
 		}
 	}
 	
+	private class BackwardsElementIterator implements Iterator<E>{
+		private DNode<E> cursor = trailer.getPrev(), 
+			    recent = null; 
+		
+		
+		@Override
+		public boolean hasNext() {
+			return cursor != header;
+		}
+
+		@Override
+		public E next() throws NoSuchElementException {
+			if (!hasNext())
+				throw new NoSuchElementException("No more elements."); 
+			recent = cursor; 
+			cursor = cursor.getPrev(); 
+			return recent.getElement();
+		} 
+		
+		public void remove() throws IllegalStateException { 
+			if (recent == null) 
+				throw new IllegalStateException("remove() not valid at this state of the iterator."); 
+			DNode<E> b = recent.getPrev(); 
+			DNode<E> a = recent.getNext(); 
+			b.setNext(a);
+			a.setPrev(b);
+			recent.clean(); 
+			recent = null; 
+			size--;          // important because we are removing recent directly....
+		}
+	}
+	
 	private class PositionIterable implements Iterable<Position<E>> {
 
 		@Override
@@ -238,5 +270,7 @@ public class LinkedPositionalList<E> implements PositionalList<E> {
 		} 
 		
 	}
+	
+
 	
 }
